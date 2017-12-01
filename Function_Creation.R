@@ -1,4 +1,4 @@
-
+# Function 1
 # Function to filter original data based on crop year and Rank.
 data_by_cy <- function(rawDF, filter_by_cy =`Crop Year`, cy){  
   cur_year_data <- filter(rawDF, filter_by_cy == cy[1])
@@ -23,30 +23,34 @@ data_by_cy <- function(rawDF, filter_by_cy =`Crop Year`, cy){
   return(analysis_data)  
 }
 
-
-# function to insert row in the data with doing change in Production
-# and creating corresponding average COP.
+# Function 2
+# function to insert row in the data with insertion of adjusted number in a in generalized way.
+# and creating one extra column for weighted value. 
 insertRow <- function(existingDF, r, prod_split, start_row = 1){
+  prod_col_num <- which(names(existingDF) == "Production (MT)")
+  tc_col_num <- which(names(data) == "Total cost (Cts/lb)")
+  cum_prod_num <- which(names(data) == "Cummulative_Production")
+  avg_COP_col_num <- which(names(existingDF) == "Avg_COP")
+  
   existingDF[seq(r+1, nrow(existingDF)+1), ] <- 
     existingDF[seq(r, nrow(existingDF)), ]
-  existingDF[r, "Production (MT)"] <- prod_split - 
-    existingDF[r-1, "Cummulative_Production"]
-  existingDF[r+1, "Production (MT)"] <- existingDF[r+1, "Production (MT)"]- 
-    existingDF[r, "Production (MT)"]
-  existingDF$Cummulative_Production <- cumsum(existingDF$`Production (MT)`)
-  existingDF[start_row:r, "Avg_COP"] <- 
-    weighted.mean(x = existingDF$`Total cost (Cts/lb)`[start_row:r], 
-                  w = existingDF$`Production (MT)`[start_row:r])
-  # start_row <- r + 1
+  existingDF[r, prod_col_num] <- prod_split - 
+    existingDF[r-1, cum_prod_num]
+  existingDF[r+1, prod_col_num] <- existingDF[r+1, prod_col_num]- 
+    existingDF[r, prod_col_num]
+  existingDF[, cum_prod_num] <- cumsum(existingDF[, prod_col_num])
+  # existingDF$Cummulative_Production <- cumsum(existingDF$`Production (MT)`)
+  x = existingDF[start_row:r, tc_col_num]
+  w = existingDF[start_row:r, prod_col_num]
+  existingDF[start_row:r, avg_COP_col_num] <- sum(x*w)/sum(w)
   # assign('existingDF',existingDF, envir = .GlobalEnv)
-  # assign('start_row', start_row, envir = .GlobalEnv)
   # assingin data of runtime environment to Global environment
   return(existingDF)
 }
-  
 
+
+# Function 3
 # Function to modify data with adding rows using insertRow function created above for three year, based on the some predefined arguments.
-
 avg_cop_data <- function(data, cy){
   avg_cop_by_cy <- vector("list", length(cy))  
   cy_col_num <- which(names(data) == "Crop Year")
@@ -79,7 +83,7 @@ avg_cop_data <- function(data, cy){
 }
 
 
-
+# Function 3.1 (same as of function 3 but for one year at a time) 
 #Function for reading one crop year data
 avg_cop_data_version2 <- function(data, cy){
   cy_col_num <- which(names(data) == "Crop Year")
@@ -106,3 +110,26 @@ avg_cop_data_version2 <- function(data, cy){
   existingDF[row_lst_prt:nrow(existingDF), avg_COP_col_num] <- sum(x*y)/sum(y)
   return(existingDF)
 }
+
+# Function 2.1 (Same as function 2 but not genearlized one).
+insertRow <- function(existingDF, r, prod_split, start_row = 1){
+  existingDF[seq(r+1, nrow(existingDF)+1), ] <- 
+    existingDF[seq(r, nrow(existingDF)), ]
+  existingDF[r, "Production (MT)"] <- prod_split - 
+    existingDF[r-1, "Cummulative_Production"]
+  existingDF[r+1, "Production (MT)"] <- existingDF[r+1, "Production (MT)"]- 
+    existingDF[r, "Production (MT)"]
+  existingDF$Cummulative_Production <- cumsum(existingDF$`Production (MT)`)
+  existingDF[start_row:r, "Avg_COP"] <- 
+    weighted.mean(x = existingDF$`Total cost (Cts/lb)`[start_row:r], 
+                  w = existingDF$`Production (MT)`[start_row:r])
+  # start_row <- r + 1
+  # assign('existingDF',existingDF, envir = .GlobalEnv)
+  # assign('start_row', start_row, envir = .GlobalEnv)
+  # assingin data of runtime environment to Global environment
+  return(existingDF)
+}
+ 
+
+
+
