@@ -1,0 +1,253 @@
+---
+title: "Coffee-Yield(MT/ha) Analysis"
+output: html_document
+---
+
+```{r include=FALSE}
+country <- country_name[country_name_num]
+coffee_type <- coffee_type
+```
+## `r country` `r coffee_type`
+
+For the analysis purpose, data considered here is till `r crop_year`-`r crop_year+1` Crop-Year and it is shown below.
+
+```{r echo = FALSE, results = 'asis'}
+library(knitr)
+kable(yield_training_data,
+      caption = paste0(country,"_", coffee_type, " yield data "),
+      align = 'c', digits = 3)
+```
+
+## The basic Statistical Summary
+
+```{r, echo=FALSE}
+summary(yield_training_data[,3])
+```
+
+## Data visualization (Graphical Plot)
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 7}
+
+plot(yield_training_data[, 3], 
+     main = paste0(country," ", coffee_type, " Yield (MT/ha)"),
+     xlab = "Crop-Year", 
+     ylab = "Yield(MT/ha)",
+     type = "o",
+     xaxt = "n")
+axis(side = 1,
+     at = 1: length(yield_training_data[, 3]), 
+     labels = yield_training_data[,1],
+     las = 3,
+     col.axis = "blue")
+axis(side = 2,
+     col.axis = "blue")
+
+```
+
+
+In this report, basically three types of method are used to understand the behaviour of data and then accordingly the best suitable model is choosen based on different conditions (e.g. Residual analysis, R-square, Mean absolute percentage error etc.). The forecast values with prediction interval for two forward year is reported for each methods. The methods used are:-
+
+1. Linear Regression Model.
+2. ExponenTial Smoothing called as ETS model.
+3. Auto Regressive Integrated Moving Average (ARIMA) model.
+
+
+## Method 1: Linear Regression Model
+
+```{r highlight= TRUE, echo=FALSE}
+
+summary(linear_fit)
+
+```
+
+```{r include=FALSE}
+linear_coefficient1 <- linear_fit$coefficients[1]
+linear_coefficient2 <- linear_fit$coefficients[2]
+```
+
+The model obtained from linear regression is 
+yield = `r linear_coefficient1` + `r linear_fit$coefficients[2]` * Year
+
+
+Next step is to look residual analysis to see whether the model is good enought to use for prediction or not. For this purpose, residual plots are shown below with the p-value to take a call whether the residuals are normally distributed or not.
+
+
+```{r, echo = FALSE, fig.width = 8.5, fig.height = 5}
+
+qqnorm(linear_fit$residuals)
+qqline(linear_fit$residuals)
+
+```
+
+```{r, echo = FALSE, highlight = FALSE}
+p_value <- shapiro.test(linear_fit$residuals)[2]
+p_value
+if(p_value >= 0.05){
+  print("Since p_value >= 0.05, residuals are normally distributed.")
+  print("This satisfy one of the condition of the model to be adequate.")
+} else {
+  print("Residuals are not normally distributed.")
+}
+
+```
+
+On the basis of model obtained from linear regression, forecast done for next two years with 80 % prediction interval is:
+
+```{r, echo=FALSE}
+linear_predict
+```
+
+Now moving to time series approach in which we will consider ExponenTial smoothing (ets) and ARIMA model (Auto Regressive Integrated Moving Average). A short introduction about these method before proceeding further.
+   
+Exponential smoothing  (ets) uses exponential curve fitting using error (E), trend(T) and seasonal (S) component of data. In this, there are few combination which is basically based on the additive or multiplicative nature of components. The format of ets is ETS(E, T, S).
+    
+The ARIMA models is basically a combination of differencing (differencing is done to remove seasonality, trend/cycle pattern of data) with auto regression and a moving average model. The format of this model is ARIMA(p, d, q) where "p" stands for order of the auto regressive part, "d" stands for degree of first differencing and "q" stands for order of the moving average part. 
+    
+The model obtained through these methods are judged based on some tests like Root Mean Square Error (RMSE), Mean absolute error (MAE), Mean Absolute percentage error (MAPE) and there are few more other checks for juding the accuracy of the model.
+    
+But for the simplicity, here we will be using MAPE and residuals analysis to check the accuracy of the model. On the basis of MAPE, one can consider model, based on the below condition.
+
+Model is good if MAPE <= 10%
+Model is very good if MAPE <= 5%
+
+ 
+## Method 2: ETS Model (ExponenTial Smoothing)
+
+In this method, ets model will automatically determine the best suitable combination of ets(E, T, S). Based on the analysis, the following is the output for time series model.
+
+
+```{r, echo = FALSE}
+summary(ets_fit)
+
+```
+
+The fitted line determined through the ets(E, T, S) model is plotted and compared with linear regression model and is shown below.
+
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 7}
+
+plot(forecast(ets_fit, h = 2), 
+     ylab = "Yield (MT/ha)",
+     xlab = "Crop-Year",
+     main = paste0(country," ", coffee_type,
+                   ": Yield Forecast using ExponenTial Smoothing (ETS) model"),
+     type = "o",
+     xaxt = "n")
+
+axis(side = 1,
+     at = 1: no_of_obs, 
+     labels = yield_training_data[,1],
+     las = 3,
+     col.axis = "blue")
+axis(side = 2,
+     col.axis = "blue")
+
+lines(ets_fit$fitted,
+      col = "red",
+      type = "o")
+lines(linear_fit$fitted.values,
+      col = "blue",
+      type = "o")
+legend("topleft",
+       lty= 1,
+       col=c("black","blue","red"), 
+       legend = c("Original Data", "Linear Regression Fit",
+                  "ExponenTial Smoothing Fit"), 
+       bty = "n",
+       cex = .7)
+```
+
+Next is residual plot. It is shown below.
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 7}
+
+qqnorm(ets_fit$residuals)
+qqline(ets_fit$residuals)
+
+```
+
+```{r, echo = FALSE, highlight = FALSE}
+p_value <- shapiro.test(linear_fit$residuals)[2]
+p_value
+if(p_value >= 0.05){
+  print("Since p_value >= 0.05, residuals are normally distributed.")
+  print("This satisfy one of the condition of the model to be adequate.")
+} else {
+  print("Residuals are not normally distributed.")
+}
+```
+
+Yield forecast for `r country` `r coffee_type` using "ets model" for next two forward year with 80 and 95 % prediction interval are given below.
+
+```{r, echo = FALSE}
+ets_forecast <- data.frame(forecast(ets_fit, h = 2))
+cbind(Crop_Year = yield_test_data[,1], ets_forecast)
+```
+
+## Method 3: Auto Regressive Integrated Moving Average (ARIMA) Model 
+
+In this method, firstly it checks for the stationary (free from trend and seasonal pattern) of the data. If data is not stationary then it tries differencing method to make it sationary and then builds model.
+
+
+```{r, echo = FALSE}
+summary(arima_fit)
+
+```
+
+The fitted line determined through the ARIMA() model is plotted and compared with linear regression model and is shown below.
+
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 7}
+plot(forecast(arima_fit, h = 2),
+     ylab = "Yield (MT/ha)",
+     xlab = "Crop-Year",
+     main = paste0(country," ", coffee_type,": Yield Forecast using ARIMA Model"),
+     type = "o",
+     xaxt = "n")
+axis(side = 1,
+     at = 1: no_of_obs, 
+     labels = yield_training_data[,1],
+     las = 3,
+     col.axis = "blue")
+axis(side = 2,
+     col.axis = "blue")
+
+lines(arima_fit$fitted,
+      col = "blue",
+      type = "o")
+lines(linear_fit$fitted.values,
+      col = "red",
+      type = "o")
+
+legend("topleft", 
+       lty= 1, 
+       col=c("black","blue","red"), 
+       legend = c("Yield data", "ARIMA Model","Linear Regression Fit"),
+       bty = "n",
+       cex = .7)
+```
+
+Next is residual plot. It is shown below.
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 7}
+qqnorm(arima_fit$residuals)
+qqline(arima_fit$residuals)
+```
+
+```{r, echo = FALSE, highlight = FALSE}
+p_value <- shapiro.test(linear_fit$residuals)[2]
+p_value
+if(p_value >= 0.05){
+  print("Since p_value >= 0.05, residuals are normally distributed.")
+  print("This satisfy one of the condition of the model to be adequate.")
+} else {
+  print("Residuals are not normally distributed.")
+}
+```
+
+Yield forecast for `r country` `r coffee_type` using "ARIMA model" for next two forward year with 80 and 95 % prediction interval are given below.
+
+```{r, echo = FALSE}
+arima_forecast <- data.frame(forecast(arima_fit, h = 2))
+cbind(Crop_Year = yield_test_data[,1], arima_forecast)
+```
