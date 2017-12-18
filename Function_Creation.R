@@ -24,29 +24,42 @@ data_by_cy <- function(rawDF, cy){
   return(analysis_data)
 }
 
+
 # Function to extract data for three crop year in a generalized way
 insertRow <- function(existingDF, r, prod_split, tc_unit_name, start_row = 1){
   prod_col_num <- which(names(existingDF) == "Production (MT)")
-  tc_col_num <- which(names(data) == tc_unit_name)
-  cum_prod_num <- which(names(data) == "Cummulative_Production")
+  tc_col_num <- which(names(existingDF) == tc_unit_name)
+  cum_prod_num <- which(names(existingDF) == "Cummulative_Production")
   avg_COP_col_num <- which(names(existingDF) == "Avg_COP")
   
-  existingDF[seq(r+1, nrow(existingDF)+1), ] <- 
-    existingDF[seq(r, nrow(existingDF)), ]
-  existingDF[r, prod_col_num] <- prod_split - 
-    existingDF[r-1, cum_prod_num]
-  existingDF[r+1, prod_col_num] <- existingDF[r+1, prod_col_num]- 
-    existingDF[r, prod_col_num]
-  existingDF[, cum_prod_num] <- cumsum(existingDF[, prod_col_num])
-  # existingDF$Cummulative_Production <- cumsum(existingDF$`Production (MT)`)
-  x = existingDF[start_row:r, tc_col_num]
-  w = existingDF[start_row:r, prod_col_num]
-  existingDF[start_row:r, avg_COP_col_num] <- sum(x*w)/sum(w)
+  if(r == 1){
+    existingDF[seq(r+1, nrow(existingDF)+1), ] <- 
+      existingDF[seq(r, nrow(existingDF)), ]
+    existingDF[r, prod_col_num] <- prod_split 
+    existingDF[r+1, prod_col_num] <- existingDF[r+1, prod_col_num]- 
+      existingDF[r, prod_col_num]
+    existingDF[, cum_prod_num] <- cumsum(existingDF[, prod_col_num])
+    # existingDF$Cummulative_Production <- cumsum(existingDF$`Production (MT)`)
+    x = existingDF[start_row:r, tc_col_num]
+    w = existingDF[start_row:r, prod_col_num]
+    existingDF[start_row:r, avg_COP_col_num] <- sum(x*w)/sum(w)
+  } else {
+    existingDF[seq(r+1, nrow(existingDF)+1), ] <- 
+      existingDF[seq(r, nrow(existingDF)), ]
+    existingDF[r, prod_col_num] <- prod_split - 
+      existingDF[r-1, cum_prod_num]
+    existingDF[r+1, prod_col_num] <- existingDF[r+1, prod_col_num]- 
+      existingDF[r, prod_col_num]
+    existingDF[, cum_prod_num] <- cumsum(existingDF[, prod_col_num])
+    # existingDF$Cummulative_Production <- cumsum(existingDF$`Production (MT)`)
+    x = existingDF[start_row:r, tc_col_num]
+    w = existingDF[start_row:r, prod_col_num]
+    existingDF[start_row:r, avg_COP_col_num] <- sum(x*w)/sum(w)
+  }
   # assign('existingDF',existingDF, envir = .GlobalEnv)
   # assingin data of runtime environment to Global environment
   return(existingDF)
 }
-
 
 
 # Function to extract data for three crop year based on total cost unit 
