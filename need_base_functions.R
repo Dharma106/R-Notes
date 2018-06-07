@@ -8,7 +8,7 @@ data_by_cy <- function(raw_data, year){
   
   # If user has not given year then it will ask user inputs.
   if(missing(year)){
-    year <- readline("Enter crop year in the format 2017-18 for 2017: ")
+    year <- readline("Enter year in the format 2017-18 for 2017: ")
     num_year <- strsplit(year, split = "-")
     num_year <- as.numeric(num_year[[1]])
     pre_year <- paste(num_year[1]-1, num_year[2]-1, sep = "-")
@@ -125,43 +125,5 @@ avg_cop_data <- function(data, tc_unit_name, cy){
   data_avg_cop <- do.call("rbind", avg_cop_by_cy)
   return(data_avg_cop)
 }
-
-
-
-# for one specific purpose function
-# *******************
-          # ******************
-                      # ******************
-#Function for reading one crop year data
-avg_cop_data_version2 <- function(data, cy){
-  cy_col_num <- which(names(data) == "Crop Year")
-  prod_col_num <- which(names(data) == "Production (MT)")
-  tc_col_num <- which(names(data) == "Total cost (Cts/lb)")
-  cum_prod_num <- which(names(data) == "Cummulative_Production")
-  existingDF <- filter(data, data[, cy_col_num] == cy[1])
-  existingDF$Avg_COP <- NA
-  avg_COP_col_num <- which(names(existingDF) == "Avg_COP")
-  tot_prod <- as.numeric(existingDF[nrow(existingDF), cum_prod_num])
-  prod_split <- c(0.25, 0.50, 0.75) * tot_prod
-  start_row = 1
-  for (i in 1:length(prod_split)) {
-    get_row_num <- 
-      min(which(existingDF[, cum_prod_num] > prod_split[i]))
-    prod_part <- prod_split[i]
-    existingDF <- insertRow(existingDF, get_row_num, prod_part, start_row)
-    start_row <- get_row_num + 1
-  }
-  existingDF <- existingDF
-  row_lst_prt <- get_row_num + 1
-  x = existingDF[row_lst_prt:nrow(existingDF), tc_col_num]
-  y = existingDF[row_lst_prt:nrow(existingDF), prod_col_num]
-  existingDF[row_lst_prt:nrow(existingDF), avg_COP_col_num] <- sum(x*y)/sum(y)
-  return(existingDF)
-}
-
-
-
-
-
 
 
