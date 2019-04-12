@@ -7,10 +7,10 @@ library(plyr)
 library(XLConnect)
 
 # To unzip the zip file.
-unzip("OUTWARD Sept 2017.zip")
+unzip("xyz.zip")
 
 # storing directory location as variable
-directory <- paste0(getwd(), c("/OUTWARD"))
+directory <- paste0(getwd(), c("/zipped_file"))
 
 # Reading all the folders of unzipped file as an object.
 read_folder <- list.files(directory)
@@ -30,7 +30,7 @@ for (i in 1 : length(read_folder)) {
   for (i in 1:length(read_sub_folder)) {
     sub_dir_pdf <- paste0(sub_dir, "/", read_sub_folder[i])
     read_pdf <- pdf_text(sub_dir_pdf)
-    keyword_location <- keyword_search(read_pdf, keyword = "COFFEE")
+    keyword_location <- keyword_search(read_pdf, keyword = "abc")
     page_num <- keyword_location$page_num
     page_num <- unique(page_num)
     
@@ -54,11 +54,11 @@ for (i in 1 : length(read_folder)) {
 }
 
 # Creating workbook and saving extreted content to sheet.
-wb <- loadWorkbook("Indo_Custom_PDF_data.xlsx", create = TRUE)
-createSheet(wb, name = "Indo_Custom_Extract")
-setColumnWidth(wb,sheet = "Indo_Custom_Extract", width = 40)
-setRowHeight(wb, sheet = "Indo_Custom_Extract", height = 15)
-writeWorksheet(object = wb, data = temp_data, sheet = "Indo_Custom_Extract")
+wb <- loadWorkbook("data.xlsx", create = TRUE)
+createSheet(wb, name = "sheet1")
+setColumnWidth(wb,sheet = "sheet1", width = 40)
+setRowHeight(wb, sheet = "sheet1", height = 15)
+writeWorksheet(object = wb, data = temp_data, sheet = "sheet1")
 saveWorkbook(wb)
 
 
