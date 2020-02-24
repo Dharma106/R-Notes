@@ -1,0 +1,21 @@
+list of important statistical\ML and Programming books
+
+(Addison-Wesley Series on Tools and Techniques for Computer Typesetting) Frank Mittelbach, Michel Goossens, Johannes Braams, David Carlisle, Chris Rowley-The LaTeX Companion-Addison-Wesley Professiona.pdf
+(Pragmatic programmers) Jennifer Campbell, Paul Gries, Jason Montojo, Greg Wilson-Practical programming_ An introduction to computer science using Python-Pragmatic Bookshelf (2009).pdf
+(Springer Texts in Statistics) Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani-An Introduction to Statistical Learning wit.pdf
+(Use R) Hadley Wickham (auth.)-ggplot2_ Elegant Graphics for Data Analysis-Springer-Verlag New York (2009).pdf
+Hadley Wickham, Garrett Grolemund-R for Data Science_ Import, Tidy, Transform, Visualize, and Model Data-O’Reilly Media (2017).pdf
+Introduction to Statistical Quality Control Douglas C Montogmery.pdf
+John C Hull-Options, Futures and Other Derivatives 7th edition-Prentice Hall (2008).pdf
+Kennedy-A Guide to Econometrics-Mit Press (1998).pdf
+Montgomery D.C.-Applied Statistics and Probability for Engineers-Wiley (2014).pdf
+Panel Data Econometrics using R.pdf
+Pattern Recognition and Machine Learning by Christopher M. Bishop.pdf
+Paul Gries, Jennifer Campbell, Jason Montojo-Practical Programming, 2nd Edition_ An Introduction to Computer Science Using Python 3-The P.pdf
+Python for Dummies.pdf
+Rob Hyndman Forecasting Principles solutions.pdf
+Spyros G. Makridakis, Steven C. Wheelwright, Rob J Hyndman-Forecasting_ Methods and Applications-Wiley (1997).pdf
+Sushmita Mitra, Tinku Acharya-Data Mining Multimedia, Soft Computing, and Bioinformatics-Wiley-Interscience (2003).pdf
+The Hundred-Page Machine Learning Book (2019, Andriy Burkov).pdf
+The-elements-of-statistical-learning-Data-mining-inference-and-prediction.pdf
+Wes McKinney-Python for Data Analysis. Data Wrangling with Pandas, NumPy, and IPython-O’Reilly (2017).pdf
