@@ -19,3 +19,7 @@ Sushmita Mitra, Tinku Acharya-Data Mining Multimedia, Soft Computing, and Bioinf
 The Hundred-Page Machine Learning Book (2019, Andriy Burkov).pdf
 The-elements-of-statistical-learning-Data-mining-inference-and-prediction.pdf
 Wes McKinney-Python for Data Analysis. Data Wrangling with Pandas, NumPy, and IPython-O’Reilly (2017).pdf
+
+****************8
+The jsonlite Package: A Practical and Consistent Mapping Between JSON Data and R Objects link:
+https://arxiv.org/abs/1403.2805
